@@ -7,7 +7,19 @@
 
 namespace LinuxParser {
 // Paths
+#if defined(__APPLE__)
+
+const std::string kProcDirectory{"../mock_proc/"};
+const std::string kOSPath{"../mock_proc/os-release"};
+const std::string kPasswordPath{"../mock_proc/passwd"};
+
+#else
+
 const std::string kProcDirectory{"/proc/"};
+const std::string kOSPath{"/etc/os-release"};
+const std::string kPasswordPath{"/etc/passwd"};
+#endif
+
 const std::string kCmdlineFilename{"/cmdline"};
 const std::string kCpuinfoFilename{"/cpuinfo"};
 const std::string kStatusFilename{"/status"};
@@ -15,8 +27,6 @@ const std::string kStatFilename{"/stat"};
 const std::string kUptimeFilename{"/uptime"};
 const std::string kMeminfoFilename{"/meminfo"};
 const std::string kVersionFilename{"/version"};
-const std::string kOSPath{"/etc/os-release"};
-const std::string kPasswordPath{"/etc/passwd"};
 
 // System
 float MemoryUtilization();
