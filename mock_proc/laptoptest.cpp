@@ -1,23 +1,19 @@
-#include "processor.h"
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "linux_parser.h"
 
-// TODO: Return the aggregate CPU utilization
-float Processor::Utilization() {
-  std::ifstream stream(LinuxParser::kProcDirectory +
-                       LinuxParser::kStatFilename);
-  if (stream.is_open()) {
+int main(){
+  std::ifstream filestream("stat");
+
+  if (filestream.is_open()){
     std::string line;
-    while (std::getline(stream, line)) {
+    while(std::getline(filestream, line)){
       std::istringstream linestream(line);
-
-      if (linestream.str().substr(0, 4) == "cpu ") {
+      
+      if (linestream.str().substr(0,4)== "cpu ") {
         std::string name;
         double val;
         std::vector<double> values;
@@ -34,23 +30,25 @@ float Processor::Utilization() {
         double& irq = values[5];
         double& softirq = values[6];
         double& steal = values[7];
-        // double& guest = values[8];
-        // double& guestnice = values[9];
+        double& guest = values[8];
+        double& guestnice = values[9];
         // calcs
 
-        double a_idle = idle + iowait;
+        double a_idle =  idle + iowait;
         // guest and guestnice already in guest and nice
-        double nonidle = usertime + nice + system + irq + softirq + steal;
-
+        double nonidle = usertime + nice + system + irq + softirq + steal; 
+        
         double percentage = nonidle / (a_idle + nonidle);
-        return percentage;
-
-      } else {
-        return -1.0f;
+ 
+        std::cout << "percentage "<<  percentage <<"\n"; 
+        //
+        // for (double v : values) {
+        //   std::cout << v << std::endl;
+        //
+        //
+        // }
       }
-    }
-    return -1.0f;
-  } else {
-    return -1.0f;
   }
 }
+}
+
