@@ -1,21 +1,30 @@
+#include "system.h"
+
 #include <unistd.h>
+
 #include <cstddef>
+#include <fstream>
+#include <iostream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "linux_parser.h"
 #include "process.h"
 #include "processor.h"
-#include "system.h"
+using namespace LinuxParser;
 
 using std::set;
 using std::size_t;
 using std::string;
 using std::vector;
-/*You need to complete the mentioned TODOs in order to satisfy the rubric criteria "The student will be able to extract and display basic data about the system."
+/*You need to complete the mentioned TODOs in order to satisfy the rubric
+criteria "The student will be able to extract and display basic data about the
+system."
 
-You need to properly format the uptime. Refer to the comments mentioned in format. cpp for formatting the uptime.*/
+You need to properly format the uptime. Refer to the comments mentioned in
+format. cpp for formatting the uptime.*/
 
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
@@ -24,25 +33,96 @@ Processor& System::Cpu() { return cpu_; }
 vector<Process>& System::Processes() { return processes_; }
 
 // TODO: Return the system's kernel identifier (string)
-std::string System::Kernel() {
-  return LinuxParser::Kernel();
-}
+std::string System::Kernel() { return LinuxParser::Kernel(); }
 
 // TODO: Return the system's memory utilization
-float System::MemoryUtilization() { return 0.0; }
+float System::MemoryUtilization() {
+  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
+  if (filestream.is_open()) {
+    string line, name, val;
+    double total, free;
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      linestream >> name;
+      if (name == "MemTotal:") {
+        linestream >> val;
+        total = std::stoi(val);
 
-//Return the operating system name
-std::string System::OperatingSystem() {
-return LinuxParser::OperatingSystem();
+      } else if (name == "MemFree:") {
+        linestream >> val;
+        free = std::stoi(val);
+      } else {
+        break;
+      }
+    }
+    double memutil;
+    memutil = free / total;
+    return memutil;
+  }
 
-
+  return -1.0f;
 }
 
+// Return the operating system name
+std::string System::OperatingSystem() { return LinuxParser::OperatingSystem(); }
+
 // TODO: Return the number of processes actively running on the system
-int System::RunningProcesses() { return 0; }
+int System::TotalProcesses() {
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    std::string line;
+    string name;
+    int number;
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> name;
+
+      if (name == "processes") {
+        linestream >> number;
+        return number;
+      }
+    }
+  } else {
+    return -1;
+  }
+  return -1;
+}
 
 // TODO: Return the total number of processes on the system
-int System::TotalProcesses() { return 0; }
+int System::RunningProcesses() {
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    std::string line;
+    string name;
+    int number;
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> name;
+
+      if (name == "procs_running") {
+        linestream >> number;
+        return number;
+      }
+    }
+  } else {
+    return -1;
+  }
+  return -1;
+}
 
 // TODO: Return the number of seconds since the system started running
-long int System::UpTime() { return 0; }
+long int System::UpTime() {
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
+  string line, val1;
+  long int uptime = -1;
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> val1;
+      std::cout << val1 << std::endl;
+      uptime = std::stoi(val1);
+      std::cout << val1 << std::endl;
+    }
+  }
+  return uptime;
+}

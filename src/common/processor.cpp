@@ -7,11 +7,12 @@
 #include <vector>
 
 #include "linux_parser.h"
+using namespace LinuxParser;
 
 // TODO: Return the aggregate CPU utilization
 float Processor::Utilization() {
-  std::ifstream stream(LinuxParser::kProcDirectory +
-                       LinuxParser::kStatFilename);
+  std::ifstream stream(kProcDirectory +
+                       kStatFilename);
   if (stream.is_open()) {
     std::string line;
     while (std::getline(stream, line)) {
