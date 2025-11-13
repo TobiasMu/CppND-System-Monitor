@@ -5,6 +5,7 @@
 
 namespace Format {
 std::string ElapsedTime(long times);  // TODO: See src/format.cpp
+std::string EnsureStringLength(int number);  // TODO: See src/format.cpp
 };                                    // namespace Format
 
 #endif
