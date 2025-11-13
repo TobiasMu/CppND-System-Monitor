@@ -111,17 +111,17 @@ int System::RunningProcesses() {
 }
 
 // TODO: Return the number of seconds since the system started running
-long int System::UpTime() {
+long System::UpTime() {
   std::ifstream stream(kProcDirectory + kUptimeFilename);
-  string line, val1;
-  long int uptime = -1;
-  if (stream.is_open()) {
+  string line, val1, val2;
+  long uptime = -1;
+  if ((stream.is_open())) {
+
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> val1;
-      std::cout << val1 << std::endl;
       uptime = std::stoi(val1);
-      std::cout << val1 << std::endl;
+      return uptime;
     }
   }
   return uptime;
