@@ -25,17 +25,30 @@ system."
 
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
+Process::Process(int process_id) {
+  this->process_id = process_id;
+};
 
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes() {
+  vector<Process> result;
+  vector<int> pids = LinuxParser::Pids();
+  for (int i : pids) {
+    Process process( i);
+    std::cout << process.Pid() << std::endl;
+    result.push_back(process);
+  }
 
-// TODO: Return the system's kernel identifier (string)
+
+
+  return result;
+}
+
 std::string System::Kernel() { return LinuxParser::Kernel(); }
 
-// TODO: Return the system's memory utilization
 float System::MemoryUtilization() {
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
@@ -66,7 +79,6 @@ float System::MemoryUtilization() {
 // Return the operating system name
 std::string System::OperatingSystem() { return LinuxParser::OperatingSystem(); }
 
-// TODO: Return the number of processes actively running on the system
 int System::TotalProcesses() {
   std::ifstream stream(kProcDirectory + kStatFilename);
   if (stream.is_open()) {
@@ -88,7 +100,6 @@ int System::TotalProcesses() {
   return -1;
 }
 
-// TODO: Return the total number of processes on the system
 int System::RunningProcesses() {
   std::ifstream stream(kProcDirectory + kStatFilename);
   if (stream.is_open()) {
@@ -110,7 +121,6 @@ int System::RunningProcesses() {
   return -1;
 }
 
-// TODO: Return the number of seconds since the system started running
 long System::UpTime() {
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   string line, val1, val2;
